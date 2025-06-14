@@ -7,7 +7,7 @@ export function Ok<T>(data: T): AssertResult<T> {
   return { success: true, data };
 }
 
-export function Err(error: string): AssertResult<false> {
+export function Err(error: string): AssertResult {
   return { success: false, error };
 }
 

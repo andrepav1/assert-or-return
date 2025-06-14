@@ -1,15 +1,41 @@
 {
   "name": "assert-or-return",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Type-safe assertion library with decorator-based early returns for TypeScript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "clean": "rm -rf dist dev-dist"
+    "clean": "rm -rf dist dev-dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "release:patch": "npm version patch && npm publish && git push --follow-tags",
+    "release:minor": "npm version minor && npm publish && git push --follow-tags",
+    "release:major": "npm version major && npm publish && git push --follow-tags"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "assertions",
+    "typescript",
+    "decorators",
+    "error-handling",
+    "result-type",
+    "early-return"
+  ],
+  "author": "Andrea Pavan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrepav1/assert-or-return.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrepav1/assert-or-return/issues"
+  },
+  "homepage": "https://github.com/andrepav1/assert-or-return#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "devDependencies": {
     "@types/node": "^24.0.1",
     "tsx": "^4.20.3",

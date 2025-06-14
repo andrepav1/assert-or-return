@@ -1,10 +1,20 @@
-import { assertOr, HasAssertions, AssertResult, Ok } from "./index";
+import { assertOr, HasAssertions, AssertResult, Ok, Err } from "./index";
 
 class Calculator {
   @HasAssertions()
   static add(a?: number, b?: number): AssertResult<number> {
     assertOr(a, "Parameter 'a' is required");
     assertOr(b, "Parameter 'b' is required");
+    return Ok(a + b);
+  }
+
+  static add2(a?: number, b?: number): AssertResult<number> {
+    if (!a) {
+      return Err("Parameter 'a' is required");
+    }
+    if (!b) {
+      return Err("Parameter 'b' is required");
+    }
     return Ok(a + b);
   }
 
