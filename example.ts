@@ -1,4 +1,4 @@
-import { assertOr, HasAssertions, AssertResult, Ok } from "./assert-or";
+import { assertOr, HasAssertions, AssertResult, Ok } from "./index";
 
 class Calculator {
   @HasAssertions()
