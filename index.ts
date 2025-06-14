@@ -18,7 +18,7 @@ class AssertionError extends Error {
   }
 }
 
-export function assertOr<T>(
+export function assert<T>(
   value: T,
   errorMessage: string
 ): asserts value is NonNullable<T> {

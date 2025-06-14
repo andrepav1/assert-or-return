@@ -21,13 +21,25 @@ npm install assert-or-return
 ### Basic Example
 
 ```typescript
-import { assertOr, HasAssertions, AssertResult, Ok } from 'assert-or-return';
+import { assert, HasAssertions, AssertResult, Ok, Err } from 'assert-or-return';
 
 class Calculator {
+  // With assert-or-return decorator (simplified)
   @HasAssertions()
   static add(a?: number, b?: number): AssertResult<number> {
-    assertOr(a, "Parameter 'a' is required");
-    assertOr(b, "Parameter 'b' is required");
+    assert(a, "Parameter 'a' is required");
+    assert(b, "Parameter 'b' is required");
+    return Ok(a + b);
+  }
+
+  // Without decorator (manual error handling)
+  static addWithoutAssertions(a?: number, b?: number): AssertResult<number> {
+    if (!a) {
+      return Err("Parameter 'a' is required");
+    }
+    if (!b) {
+      return Err("Parameter 'b' is required");
+    }
     return Ok(a + b);
   }
 }
@@ -44,9 +56,11 @@ const result2 = Calculator.add(1); // Missing second parameter
 console.log(result2); // { success: false, error: "Parameter 'b' is required" }
 ```
 
+The decorator approach eliminates the need for manual `if` checks and `return Err()` statements, making your code more concise and readable.
+
 ### How It Works
 
-1. **`assertOr(value, errorMessage)`** - Throws an assertion error if value is falsy
+1. **`assert(value, errorMessage)`** - Throws an assertion error if value is falsy
 2. **`@HasAssertions()`** - Decorator that catches assertion errors and returns them as `AssertResult`
 3. **`AssertResult<T>`** - Type-safe result type: `{ success: true, data: T }` or `{ success: false, error: string }`
 4. **`Ok(value)`** - Helper to create success results
@@ -58,8 +72,8 @@ The library provides full TypeScript support:
 ```typescript
 // TypeScript knows the types after assertions
 function processUser(user?: User): AssertResult<string> {
-  assertOr(user, "User is required");
-  assertOr(user.name, "User name is required");
+  assert(user, "User is required");
+  assert(user.name, "User name is required");
   
   // TypeScript knows user and user.name are non-null here
   return Ok(`Hello ${user.name}!`);
@@ -87,7 +101,7 @@ Add these options to your `tsconfig.json`:
 
 ## API Reference
 
-### `assertOr<T>(value: T, errorMessage: string): asserts value is NonNullable<T>`
+### `assert<T>(value: T, errorMessage: string): asserts value is NonNullable<T>`
 
 Asserts that a value is truthy. If the assertion fails, throws an error that gets caught by the `@HasAssertions()` decorator.
 
@@ -108,6 +122,52 @@ Helper function to create successful results.
 ### `Err(error: string): AssertResult<never>`
 
 Helper function to create error results.
+
+## Limitations
+
+### Decorator Scope
+
+The `@HasAssertions()` decorator **only works on class methods**. It cannot be used on:
+- Standalone functions
+- Arrow functions
+- Object methods (outside of classes)
+
+```typescript
+// ✅ Works - class method
+class MyClass {
+  @HasAssertions()
+  static myMethod(): AssertResult<string> {
+    assert(someValue, "Error message");
+    return Ok("success");
+  }
+}
+
+// ❌ Doesn't work - standalone function
+@HasAssertions() // This won't work
+function myFunction(): AssertResult<string> {
+  assert(someValue, "Error message");
+  return Ok("success");
+}
+```
+
+### Behavior Without Decorator
+
+When `assert()` is used **without** the `@HasAssertions()` decorator, it behaves like Node.js's built-in `assert` module - it simply throws an `AssertionError` that you must catch yourself:
+
+```typescript
+import { assert } from 'assert-or-return';
+
+function withoutDecorator(value?: string) {
+  try {
+    assert(value, "Value is required"); // Throws AssertionError if value is falsy
+    console.log("Value is:", value);
+  } catch (error) {
+    console.log("Caught error:", error.message); // Manual error handling required
+  }
+}
+```
+
+This behavior is consistent with Node.js's `node:assert` module, making the library familiar to developers already using assertions.
 
 ## License
 
